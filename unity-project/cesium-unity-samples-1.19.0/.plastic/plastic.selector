@@ -1,4 +1,0 @@
-repository "cesium-unity-samples-1.19.0/cesium-unity-samples-1.19.0@9072328243845@cloud"
-  path "/"
-    br "/main"
-    co "/main"
