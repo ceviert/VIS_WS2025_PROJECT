@@ -1,0 +1,21 @@
+[gd_scene load_steps=6 format=3 uid="uid://c11ljop7qanj2"]
+
+[ext_resource type="Texture2D" uid="uid://qyk4oy1i3sw7" path="res://assets/earth/earth_border_map_2500dpi_v4_cropped (Custom) (1).png" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://1yxxics2ll2e" path="res://scenes/FlightController.gd" id="1_sugp2"]
+[ext_resource type="PackedScene" uid="uid://cv4ed146hk63t" path="res://assets/aircraft/plane.glb" id="3_jyhfs"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_0wfyh"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sugp2"]
+albedo_texture = ExtResource("1_o5qli")
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_sugp2")
+
+[node name="earth" type="MeshInstance3D" parent="."]
+transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
+mesh = SubResource("SphereMesh_0wfyh")
+surface_material_override/0 = SubResource("StandardMaterial3D_sugp2")
+
+[node name="plane" parent="." instance=ExtResource("3_jyhfs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 52.393448, 0)
