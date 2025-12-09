@@ -3,10 +3,16 @@ using System;
 
 public partial class CameraOrbit : Node3D
 {
-    [Export] public float RotationSpeed = 0.005f;
-    [Export] public float ZoomSpeed = 2.0f;
-    [Export] public float MinZoom = 55.0f;
-    [Export] public float MaxZoom = 300.0f;
+    [Export] public float MinSensitivity = 0.23f;
+    [Export] public float MaxSensitivity = 230.0f; 
+
+    private const float SpeedFactor = 0.0001f;
+
+    [Export] public float MinZoomStep = 0.5f;
+    [Export] public float MaxZoomStep = 50.0f;
+
+    [Export] public float MinZoom = 51.0f;
+    [Export] public float MaxZoom = 1000.0f;
 
     private Camera3D _camera;
 
@@ -17,15 +23,23 @@ public partial class CameraOrbit : Node3D
 
     public override void _UnhandledInput(InputEvent @event)
     {
+        float t = Mathf.InverseLerp(MinZoom, MaxZoom, _camera.Position.Z);
+
+        float rawSensitivity = Mathf.Lerp(MinSensitivity, MaxSensitivity, t);
+
+        float currentRotSpeed = rawSensitivity * SpeedFactor;
+        
+        float currentZoomStep = Mathf.Lerp(MinZoomStep, MaxZoomStep, t);
+
         if (@event is InputEventMouseMotion mouseMotion)
         {
             if (Input.IsMouseButtonPressed(MouseButton.Left))
             {
-                RotateY(-mouseMotion.Relative.X * RotationSpeed);
+                RotateY(-mouseMotion.Relative.X * currentRotSpeed);
 
                 float currentRotX = Rotation.X;
-                currentRotX -= mouseMotion.Relative.Y * RotationSpeed;
-                currentRotX = Mathf.Clamp(currentRotX, Mathf.DegToRad(-90), Mathf.DegToRad(90));
+                currentRotX -= mouseMotion.Relative.Y * currentRotSpeed;
+                currentRotX = Mathf.Clamp(currentRotX, Mathf.DegToRad(-85), Mathf.DegToRad(85));
                 
                 Rotation = new Vector3(currentRotX, Rotation.Y, Rotation.Z);
             }
@@ -35,11 +49,11 @@ public partial class CameraOrbit : Node3D
         {
             if (mouseButton.ButtonIndex == MouseButton.WheelUp)
             {
-                ZoomCamera(-ZoomSpeed);
+                ZoomCamera(-currentZoomStep);
             }
             else if (mouseButton.ButtonIndex == MouseButton.WheelDown)
             {
-                ZoomCamera(ZoomSpeed);
+                ZoomCamera(currentZoomStep);
             }
         }
     }
