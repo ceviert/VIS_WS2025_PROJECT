@@ -13,14 +13,12 @@ public partial class PlaneController : Node3D
 
     [ExportGroup("Settings")]
     [Export] public int PointUpdateFrequency = 2; 
-    // Performans limiti
     [Export] public int MaxHistoryPoints = 1000; 
 
     private MeshInstance3D _trailInstance;
     private ImmediateMesh _trailMesh;
-    private StandardMaterial3D _aircraftMaterial; // Uçağın materyalini hafızada tutacağız
+    private StandardMaterial3D _aircraftMaterial; 
 
-    // Veri Yapıları
     private struct TrailPoint
     {
         public Vector3 Position;
@@ -36,7 +34,6 @@ public partial class PlaneController : Node3D
 
     public override void _Ready()
     {
-        // Gradient yoksa varsayılan oluştur
         if (TrailGradient == null)
         {
             TrailGradient = new Gradient();
@@ -50,22 +47,17 @@ public partial class PlaneController : Node3D
 
     private void SetupAircraftMaterial()
     {
-        // Eğer editörden AircraftMesh atandıysa
         if (AircraftMesh != null)
         {
-            // Yeni bir materyal oluştur (Böylece diğer uçakları etkilemez)
             _aircraftMaterial = new StandardMaterial3D();
             
-            // Trail ile uyumlu olsun diye "Unshaded" yapabilirsin. 
-            // Işık alsın istiyorsan bu satırı sil.
             _aircraftMaterial.ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded; 
             
-            // Uçağa bu özel materyali ata
             AircraftMesh.MaterialOverride = _aircraftMaterial;
         }
         else
         {
-            GD.PrintErr($"[PlaneController] '{Name}' uçağında AircraftMesh atanmamış! Renk değişmeyecek.");
+            GD.PrintErr($"[PlaneController] '{Name}' AircraftMesh is not assigned to the aircraft! The color will not change.");
         }
     }
 
@@ -83,7 +75,7 @@ public partial class PlaneController : Node3D
         var mat = new StandardMaterial3D
         {
             ShadingMode = BaseMaterial3D.ShadingModeEnum.Unshaded,
-            VertexColorUseAsAlbedo = true, // Gradient için şart
+            VertexColorUseAsAlbedo = true,
             Transparency = BaseMaterial3D.TransparencyEnum.Alpha,
             CullMode = BaseMaterial3D.CullModeEnum.Disabled,
             UsePointSize = false
@@ -104,10 +96,8 @@ public partial class PlaneController : Node3D
         
         Vector3 newTargetPos = GeoUtils.LatLonToVector3(lat, lon, alt, offset, 1.0f);
 
-        // --- UÇAK RENGİNİ GÜNCELLE ---
         UpdateAircraftColor(alt);
 
-        // Işınlanma Kontrolü
         if (Position.LengthSquared() < 1.0f || Position.DistanceTo(newTargetPos) > 50.0f)
         {
             Position = newTargetPos;
@@ -121,7 +111,6 @@ public partial class PlaneController : Node3D
 
         _targetPosition = newTargetPos;
 
-        // Seyrek Trail Mantığı
         _updateCounter++;
         if (_updateCounter >= PointUpdateFrequency)
         {
@@ -135,13 +124,10 @@ public partial class PlaneController : Node3D
     {
         if (_aircraftMaterial == null) return;
 
-        // İrtifaya göre 0..1 arası oran
         float t = Mathf.Clamp(alt / MaxAltitudeFt, 0f, 1f);
         
-        // Gradient'ten rengi al
         Color color = TrailGradient.Sample(t);
         
-        // Materyale ata
         _aircraftMaterial.AlbedoColor = color;
     }
 
@@ -166,14 +152,12 @@ public partial class PlaneController : Node3D
             Vector3 curr = currPt.Position;
             Vector3 next = nextPt.Position;
 
-            // Renk Hesaplama (Trail için)
             float t1 = Mathf.Clamp(currPt.Altitude / MaxAltitudeFt, 0f, 1f);
             Color c1 = TrailGradient.Sample(t1);
 
             float t2 = Mathf.Clamp(nextPt.Altitude / MaxAltitudeFt, 0f, 1f);
             Color c2 = TrailGradient.Sample(t2);
 
-            // Geometri
             Vector3 dir = (next - curr).Normalized();
             Vector3 up = curr.Normalized(); 
             Vector3 right = dir.Cross(up).Normalized() * TrailWidth * 0.01f;

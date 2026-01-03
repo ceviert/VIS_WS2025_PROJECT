@@ -4,19 +4,16 @@ using System.Linq;
 
 public partial class UIController : Control
 {
-    // --- Ayarlar ---
-    [Export] public FleetManager FleetManagerRef; // FleetManager'a referans
+    [Export] public FleetManager FleetManagerRef; 
     [Export(PropertyHint.File, "*.csv")] public string CsvFilePath = "res://airports.csv";
     
-    // --- UI Elementleri ---
     [Export] public LineEdit SearchBar;
     [Export] public ItemList ResultList;
 
-    // --- Veri ---
     private class AirportInfo
     {
-        public string Code; // ICAO veya IATA (örn: LTFM)
-        public string Name; // Örn: Istanbul Airport
+        public string Code; 
+        public string Name; 
         public float Lat;
         public float Lon;
     }
@@ -26,17 +23,17 @@ public partial class UIController : Control
 
     public override void _Ready()
     {
-        // 1. CSV Dosyasını Yükle
+
         LoadAirportData();
 
-        // 2. Sinyalleri Bağla
+
         if (SearchBar != null)
             SearchBar.TextChanged += OnSearchTextChanged;
         
         if (ResultList != null)
             ResultList.ItemSelected += OnAirportSelected;
 
-        // Başlangıçta listeyi gizle veya boşalt
+
         if (ResultList != null) ResultList.Visible = false;
     }
 
@@ -44,33 +41,33 @@ public partial class UIController : Control
     {
         if (!FileAccess.FileExists(CsvFilePath))
         {
-            GD.PrintErr($"[AirportUI] CSV dosyası bulunamadı: {CsvFilePath}");
+            GD.PrintErr($"[AirportUI] CSV file not found: {CsvFilePath}");
             return;
         }
 
         using var file = FileAccess.Open(CsvFilePath, FileAccess.ModeFlags.Read);
         
-        // Başlık satırını atla
+
         if (!file.EofReached()) file.GetCsvLine(";"); 
 
         while (!file.EofReached())
         {
-            // ÖNEMLİ: Delimiter olarak ";" kullanıyoruz
+
             string[] line = file.GetCsvLine(";");
             
-            // Satırın en az 6 sütunu olduğundan emin ol (Lon verisi index 5'te)
+
             if (line.Length < 6) continue;
 
-            string code = line[1]; // ident sütunu
-            string name = line[3]; // name sütunu
-            string latRaw = line[4]; // latitude_deg
-            string lonRaw = line[5]; // longitude_deg
+            string code = line[1]; 
+            string name = line[3]; 
+            string latRaw = line[4]; 
+            string lonRaw = line[5]; 
 
-            // Karmaşık koordinatları temizle ve parse et
+
             float lat = ParseMessyCoordinate(latRaw, true);
             float lon = ParseMessyCoordinate(lonRaw, false);
 
-            // Koordinatlar geçerliyse (0,0 değilse) listeye ekle
+
             if (lat != 0 && lon != 0)
             {
                 _allAirports.Add(new AirportInfo 
@@ -82,20 +79,20 @@ public partial class UIController : Control
                 });
             }
         }
-        GD.Print($"[AirportUI] {_allAirports.Count} havalimanı başarıyla yüklendi.");
+        GD.Print($"[AirportUI] {_allAirports.Count} airport successfully loaded.");
     }
 
-    // Bozuk koordinat formatlarını (örn: 44.201.401 veya 467.911) düzelten fonksiyon
+
     private float ParseMessyCoordinate(string raw, bool isLat)
     {
-        // Noktaları ve olası virgülleri temizle, saf sayıya çevir
+
         string clean = raw.Replace(".", "").Replace(",", "");
         
         if (double.TryParse(clean, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double val))
         {
             double limit = isLat ? 90.0 : 180.0;
             
-            // Değer mantıklı bir aralığa (lat için 90, lon için 180) inene kadar 10'a böl
+
             while (System.Math.Abs(val) > limit)
             {
                 val /= 10.0;
@@ -109,7 +106,6 @@ public partial class UIController : Control
     {
         if (ResultList == null) return;
 
-        // Eğer arama kutusu boşsa listeyi gizle
         if (string.IsNullOrWhiteSpace(text))
         {
             ResultList.Clear();
@@ -122,8 +118,7 @@ public partial class UIController : Control
         ResultList.Clear();
         _filteredAirports.Clear();
 
-        // Basit Arama Algoritması (Kod veya İsim içinde ara)
-        // Performans için sadece ilk 20 sonucu gösterelim
+
         var results = _allAirports
             .Where(a => a.Code.Contains(text) || a.Name.ToUpper().Contains(text))
             .Take(20);
@@ -141,19 +136,18 @@ public partial class UIController : Control
         if (i < 0 || i >= _filteredAirports.Count) return;
 
         var selected = _filteredAirports[i];
-        GD.Print($"[AirportUI] Seçilen: {selected.Code} -> {selected.Lat}, {selected.Lon}");
+        GD.Print($"[AirportUI] Selected: {selected.Code} -> {selected.Lat}, {selected.Lon}");
 
-        // FleetManager'ı güncelle
         if (FleetManagerRef != null)
         {
             FleetManagerRef.CenterLat = selected.Lat;
             FleetManagerRef.CenterLon = selected.Lon;
             
-            // UI'ı temizle (isteğe bağlı)
+
             SearchBar.Text = "";
             ResultList.Visible = false;
             
-            // Odağı oyuna geri ver (Klavye ile kamera kontrolü için önemli)
+
             SearchBar.ReleaseFocus();
         }
     }
