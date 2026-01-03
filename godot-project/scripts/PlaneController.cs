@@ -4,7 +4,6 @@ using System.Collections.Generic;
 public partial class PlaneController : Node3D
 {
     [ExportGroup("References")]
-    // YENİ: Uçağın kendi Mesh'ini buraya sürükleyip bırakmalısın
     [Export] public MeshInstance3D AircraftMesh; 
 
     [ExportGroup("Visuals")]
