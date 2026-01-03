@@ -12,7 +12,7 @@ config_version=5
 
 config/name="godot_project"
 run/main_scene="uid://c11ljop7qanj2"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+config/features=PackedStringArray("4.5", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [dotnet]

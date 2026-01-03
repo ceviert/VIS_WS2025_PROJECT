@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://c11ljop7qanj2"]
+[gd_scene load_steps=9 format=3 uid="uid://c11ljop7qanj2"]
 
 [ext_resource type="Texture2D" uid="uid://qyk4oy1i3sw7" path="res://assets/earth/earth_border_map_2500dpi_v4_cropped (Custom) (1).png" id="1_o5qli"]
+[ext_resource type="Script" uid="uid://cc7f25q1ers5j" path="res://scripts/UIController.cs" id="1_tbgi4"]
 [ext_resource type="Script" uid="uid://7e5825tdkbrf" path="res://scripts/CameraOrbit.cs" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://bbc1nvp8mwn2n" path="res://scenes/plane.tscn" id="4_jyhfs"]
 [ext_resource type="Script" uid="uid://ch6i8l35sqmua" path="res://scripts/FleetManager.cs" id="5_tbgi4"]
@@ -10,12 +11,47 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sugp2"]
 albedo_texture = ExtResource("1_o5qli")
 
+[sub_resource type="SphereShape3D" id="SphereShape3D_jyhfs"]
+
 [node name="Main" type="Node3D"]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("FleetManagerRef", "SearchBar", "ResultList")]
+offset_right = 300.0
+offset_bottom = 500.0
+script = ExtResource("1_tbgi4")
+FleetManagerRef = NodePath("../../FleetManager")
+CsvFilePath = "uid://dofbltpw8cbif"
+SearchBar = NodePath("VBoxContainer/SearchInput")
+ResultList = NodePath("VBoxContainer/ResultsList")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Search for an airport..."
+horizontal_alignment = 1
+
+[node name="SearchInput" type="LineEdit" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+placeholder_text = "ICAO code"
+alignment = 1
+
+[node name="ResultsList" type="ItemList" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+auto_height = true
 
 [node name="earth" type="MeshInstance3D" parent="."]
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)
 mesh = SubResource("SphereMesh_0wfyh")
 surface_material_override/0 = SubResource("StandardMaterial3D_sugp2")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="earth"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="earth/StaticBody3D"]
+shape = SubResource("SphereShape3D_jyhfs")
 
 [node name="CameraPivot" type="Node3D" parent="."]
 script = ExtResource("3_jyhfs")
@@ -30,9 +66,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 221.19125, 200.95444)
 [node name="FleetManager" type="Node3D" parent="."]
 script = ExtResource("5_tbgi4")
 PlaneScene = ExtResource("4_jyhfs")
-UpdateInterval = 2.0
-CenterLat = 40.64
-CenterLon = -73.77
+UpdateInterval = 10.0
+CenterLat = 35.552
+CenterLon = 139.779
 
 [node name="HTTPRequest" type="HTTPRequest" parent="FleetManager"]
 
