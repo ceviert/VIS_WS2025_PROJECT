@@ -4,20 +4,16 @@ using System.Linq;
 
 public partial class UIController : Control
 {
-    // --- Referanslar ---
     [Export] public FleetManager FleetManagerRef;
     [Export(PropertyHint.File, "*.csv")] public string CsvFilePath = "res://airports.csv";
     
-    // --- Mevcut UI Elementleri ---
     [Export] public LineEdit SearchBar;
     [Export] public ItemList ResultList;
 
-    // --- YENİ UI Elementleri ---
     [Export] public HSlider RadiusSlider;
-    [Export] public Label RadiusValueLabel; // "460 km" yazan yazı
-    [Export] public CheckButton RadiusToggle; // Göster/Gizle butonu
+    [Export] public Label RadiusValueLabel; 
+    [Export] public CheckButton RadiusToggle; 
 
-    // --- Veri ---
     private class AirportInfo
     {
         public string Code; 
@@ -33,7 +29,6 @@ public partial class UIController : Control
     {
         LoadAirportData();
 
-        // --- Arama Sinyalleri ---
         if (SearchBar != null) SearchBar.TextChanged += OnSearchTextChanged;
         if (ResultList != null)
         {
@@ -41,47 +36,38 @@ public partial class UIController : Control
             ResultList.Visible = false;
         }
 
-        // --- YENİ: Slider Ayarları ---
         if (RadiusSlider != null)
         {
             RadiusSlider.MinValue = 10;
-            RadiusSlider.MaxValue = 463; // ~250 deniz mili
+            RadiusSlider.MaxValue = 463; 
             
-            // Mevcut değeri FleetManager'dan al
             if (FleetManagerRef != null)
                 RadiusSlider.Value = FleetManagerRef.RadiusKM;
 
             RadiusSlider.ValueChanged += OnRadiusChanged;
             
-            // Label'ı güncelle
             UpdateRadiusLabel((float)RadiusSlider.Value);
         }
 
-        // --- YENİ: Toggle Ayarları ---
         if (RadiusToggle != null)
         {
-            RadiusToggle.ButtonPressed = true; // Başlangıçta açık olsun
+            RadiusToggle.ButtonPressed = true; 
             RadiusToggle.Toggled += OnRadiusToggled;
         }
     }
 
-    // Slider hareket ettikçe çalışır
-    // HATA ÇÖZÜMÜ: Parametre 'float' değil 'double' olmalı
     private void OnRadiusChanged(double value)
     {
         int km = (int)value;
         
-        // Label'ı güncelle (UpdateRadiusLabel float beklediği için cast ediyoruz)
         UpdateRadiusLabel((float)value);
 
-        // FleetManager'ı güncelle
         if (FleetManagerRef != null)
         {
             FleetManagerRef.RadiusKM = km;
         }
     }
 
-    // Toggle'a basıldıkça çalışır
     private void OnRadiusToggled(bool pressed)
     {
         if (FleetManagerRef != null)
@@ -98,12 +84,10 @@ public partial class UIController : Control
         }
     }
 
-    // ... LoadAirportData, FixEncoding ve diğer mevcut fonksiyonlar aynen kalacak ...
-    // (Aşağıya önceki cevaptaki LoadAirportData, FixEncoding vb. kodlarını yapıştırın)
     
     private void LoadAirportData()
     {
-        if (!FileAccess.FileExists(CsvFilePath)) { GD.PrintErr($"[UI] CSV Yok: {CsvFilePath}"); return; }
+        if (!FileAccess.FileExists(CsvFilePath)) { GD.PrintErr($"[UI] CSV not found: {CsvFilePath}"); return; }
         using var file = FileAccess.Open(CsvFilePath, FileAccess.ModeFlags.Read);
         if (!file.EofReached()) file.GetCsvLine(";"); 
 
@@ -112,7 +96,6 @@ public partial class UIController : Control
             string[] line = file.GetCsvLine(";");
             if (line.Length < 6) continue;
             
-            // Helper fonksiyonları kullandığını varsayıyorum
             float lat = ParseMessyCoordinate(line[4], true);
             float lon = ParseMessyCoordinate(line[5], false);
 
