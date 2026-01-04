@@ -163,4 +163,12 @@ public partial class FleetManager : Node3D
         }
         _radiusMesh.SurfaceEnd();
     }
+
+    public void SetRadiusRingVisibility(bool isVisible)
+    {
+        if (_radiusRingInstance != null)
+        {
+            _radiusRingInstance.Visible = isVisible;
+        }
+    }
 }

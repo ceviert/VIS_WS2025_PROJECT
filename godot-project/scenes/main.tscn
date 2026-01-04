@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://c11ljop7qanj2"]
+[gd_scene load_steps=10 format=3 uid="uid://c11ljop7qanj2"]
 
 [ext_resource type="Texture2D" uid="uid://qyk4oy1i3sw7" path="res://assets/earth/earth_border_map_2500dpi_v4_cropped (Custom) (1).png" id="1_o5qli"]
 [ext_resource type="Script" uid="uid://cc7f25q1ers5j" path="res://scripts/UIController.cs" id="1_tbgi4"]
+[ext_resource type="Texture2D" uid="uid://ui7un67lsort" path="res://assets/Untitled Diagram.drawio.png" id="2_tefeu"]
 [ext_resource type="Script" uid="uid://7e5825tdkbrf" path="res://scripts/CameraOrbit.cs" id="3_jyhfs"]
 [ext_resource type="PackedScene" uid="uid://bbc1nvp8mwn2n" path="res://scenes/plane.tscn" id="4_jyhfs"]
 [ext_resource type="Script" uid="uid://ch6i8l35sqmua" path="res://scripts/FleetManager.cs" id="5_tbgi4"]
@@ -17,7 +18,7 @@ albedo_texture = ExtResource("1_o5qli")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("FleetManagerRef", "SearchBar", "ResultList")]
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("FleetManagerRef", "SearchBar", "ResultList", "RadiusSlider", "RadiusValueLabel", "RadiusToggle")]
 offset_right = 300.0
 offset_bottom = 500.0
 script = ExtResource("1_tbgi4")
@@ -25,6 +26,9 @@ FleetManagerRef = NodePath("../../FleetManager")
 CsvFilePath = "uid://dofbltpw8cbif"
 SearchBar = NodePath("VBoxContainer/SearchInput")
 ResultList = NodePath("VBoxContainer/ResultsList")
+RadiusSlider = NodePath("VBoxContainer/RadiusSlider")
+RadiusValueLabel = NodePath("VBoxContainer/RadiusValueLabel")
+RadiusToggle = NodePath("VBoxContainer/RadiusToggle")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer"]
 layout_mode = 2
@@ -42,6 +46,37 @@ alignment = 1
 [node name="ResultsList" type="ItemList" parent="CanvasLayer/PanelContainer/VBoxContainer"]
 layout_mode = 2
 auto_height = true
+
+[node name="Label2" type="Label" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RadiusSlider" type="HSlider" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="RadiusValueLabel" type="Label" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "460km"
+horizontal_alignment = 1
+
+[node name="RadiusToggle" type="CheckButton" parent="CanvasLayer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "Show Radius Ring"
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -353.0
+offset_top = -114.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("2_tefeu")
+expand_mode = 1
+stretch_mode = 4
 
 [node name="earth" type="MeshInstance3D" parent="."]
 transform = Transform3D(100, 0, 0, 0, 100, 0, 0, 0, 100, 0, 0, 0)

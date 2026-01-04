@@ -1817,4 +1817,4 @@ id;ident;type;name;latitude_deg;longitude_deg;elevation_ft;continent;iso_country
 326731;ZWSC;medium_airport;Shache Airport;3.824.542;77.056.149;4232;AS;CN;CN-65;Shache;yes;ZWSC;QSZ;ZWSC;;;https://en.wikipedia.org/wiki/Shache_Airport;Yarkant, Yeerqiang
 27234;ZWSH;medium_airport;Kashgar Laining International Airport;395.429;76.019.997;4529;AS;CN;CN-65;Kashgar;yes;ZWSH;KHG;ZWSH;;;https://en.wikipedia.org/wiki/Kashgar_Laining_International_Airport;Kashi Airport
 27235;ZWTN;medium_airport;Hotan Airport;3.703.850.173.950.190;7.986.489.868.164.060;4672;AS;CN;CN-65;Hotan;yes;ZWTN;HTN;ZWTN;;;https://en.wikipedia.org/wiki/Hotan_Airport;Khotan, Heitan Air Base
-31313131;PORN;large_airport;Istanbul Airport;41.277.090.467.180.800;28.728.879.248.836.400;;EU;TR;TR-34;;;LTFM;;;;;;
+317457;LTFM;large_airport;İstanbul Airport;41.261.297;28.741.951;325;EU;TR;TR-34;Arnavutköy, Istanbul;yes;LTFM;IST;LTFM;;http://www.igairport.com/en;https://en.wikipedia.org/wiki/Istanbul_Airport;
