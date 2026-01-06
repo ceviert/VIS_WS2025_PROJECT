@@ -5,7 +5,7 @@ using System.Linq;
 public partial class UIController : Control
 {
     [Export] public FleetManager FleetManagerRef;
-    [Export(PropertyHint.File, "*.csv")] public string CsvFilePath = "res://airports.csv";
+    [Export(PropertyHint.File, "*.csv")] public string CsvFilePath = "res://data/airports_filtered_utf-8.txt";
     
     [Export] public LineEdit SearchBar;
     [Export] public ItemList ResultList;

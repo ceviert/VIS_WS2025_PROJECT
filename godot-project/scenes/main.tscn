@@ -23,7 +23,6 @@ offset_right = 300.0
 offset_bottom = 500.0
 script = ExtResource("1_tbgi4")
 FleetManagerRef = NodePath("../../FleetManager")
-CsvFilePath = "uid://dofbltpw8cbif"
 SearchBar = NodePath("VBoxContainer/SearchInput")
 ResultList = NodePath("VBoxContainer/ResultsList")
 RadiusSlider = NodePath("VBoxContainer/RadiusSlider")
