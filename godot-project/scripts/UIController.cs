@@ -1,11 +1,12 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 public partial class UIController : Control
 {
     [Export] public FleetManager FleetManagerRef;
-    [Export(PropertyHint.File, "*.csv")] public string CsvFilePath = "res://data/airports_filtered_utf-8.txt";
+    [Export(PropertyHint.File, "*.txt,")] public string CsvFilePath = "res://data/airports_filtered_utf-8.txt";
     
     [Export] public LineEdit SearchBar;
     [Export] public ItemList ResultList;
@@ -59,45 +60,36 @@ public partial class UIController : Control
     private void OnRadiusChanged(double value)
     {
         int km = (int)value;
-        
         UpdateRadiusLabel((float)value);
-
-        if (FleetManagerRef != null)
-        {
-            FleetManagerRef.RadiusKM = km;
-        }
+        if (FleetManagerRef != null) FleetManagerRef.RadiusKM = km;
     }
 
     private void OnRadiusToggled(bool pressed)
     {
-        if (FleetManagerRef != null)
-        {
-            FleetManagerRef.SetRadiusRingVisibility(pressed);
-        }
+        if (FleetManagerRef != null) FleetManagerRef.SetRadiusRingVisibility(pressed);
     }
 
     private void UpdateRadiusLabel(float value)
     {
-        if (RadiusValueLabel != null)
-        {
-            RadiusValueLabel.Text = $"{value:0} km";
-        }
+        if (RadiusValueLabel != null) RadiusValueLabel.Text = $"{value:0} km";
     }
 
-    
     private void LoadAirportData()
     {
         if (!FileAccess.FileExists(CsvFilePath)) { GD.PrintErr($"[UI] CSV not found: {CsvFilePath}"); return; }
+        
         using var file = FileAccess.Open(CsvFilePath, FileAccess.ModeFlags.Read);
-        if (!file.EofReached()) file.GetCsvLine(";"); 
+        
+        if (!file.EofReached()) file.GetCsvLine(","); 
 
         while (!file.EofReached())
         {
-            string[] line = file.GetCsvLine(";");
+            string[] line = file.GetCsvLine(",");
+            
             if (line.Length < 6) continue;
             
-            float lat = ParseMessyCoordinate(line[4], true);
-            float lon = ParseMessyCoordinate(line[5], false);
+            float lat = ParseCoordinate(line[4]);
+            float lon = ParseCoordinate(line[5]);
 
             if (lat != 0 && lon != 0)
             {
@@ -145,14 +137,13 @@ public partial class UIController : Control
         }
     }
 
-    private float ParseMessyCoordinate(string raw, bool isLat)
+    private float ParseCoordinate(string raw)
     {
-        string clean = raw.Replace(".", "").Replace(",", "");
-        if (double.TryParse(clean, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double val))
+        string clean = raw.Replace(",", ".");
+        
+        if (float.TryParse(clean, NumberStyles.Float, CultureInfo.InvariantCulture, out float val))
         {
-            double limit = isLat ? 90.0 : 180.0;
-            while (System.Math.Abs(val) > limit) val /= 10.0;
-            return (float)val;
+            return val;
         }
         return 0f;
     }
